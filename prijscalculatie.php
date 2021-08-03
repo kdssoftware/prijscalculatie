@@ -77,7 +77,10 @@ run_prijscalculatie();
 
 
 function prijscalculatie_formulier(){
-	
+	global $wpdb;
+	$items = $wpdb->get_results("SELECT * FROM wp_items",ARRAY_A);
+	$workshops = $wpdb->get_results("SELECT * FROM wp_workshops",ARRAY_A);
+	$content = "<script>const items=".json_encode($items).";const workshops=".json_encode($workshops).";prijscalculatie_init();</script><div id='TPX_prijscalculatie'></div>";
 	return $content;
 }
 
@@ -85,51 +88,79 @@ function prijzentabel(){
 	add_menu_page("Prijzentabel aanpassen","TPX Prijzentabel","manage_options","prijzentabel","prijzentabel_page","",200);
 }
 
-
 function prijzentabel_page(){
 	global $wpdb;
+
+	if( isset( $_POST['prijzentabel_item_add_submit'] ) ) {
+		$wpdb->insert("wp_items",array(
+			"naam"=>$_POST["naam"],
+			"winkelprijs_pp" =>$_POST["winkelprijs_pp"],
+			"winstmarge"=>$_POST["winstmarge"]
+		));
+	}else if( isset( $_POST['prijzentabel_workshop_add_submit'] ) ) {
+		$wpdb->insert("wp_workshops",array(
+			"naam"=>$_POST["naam"],
+			"min_prijs" =>$_POST["min_prijs"],
+			"prijs_pp"=>$_POST["prijs_pp"],
+			"winstmarge"=>$_POST["winstmarge"]
+		));
+	}else if(isset( $_POST['prijzentabel_item_delete_submit'] )){
+		$wpdb->delete("wp_items",array(
+			"ID"=>$_POST["ID"]
+		));
+	}else if(isset( $_POST['prijzentabel_item_edit_submit'] )){
+		
+	}else if(isset( $_POST['prijzentabel_workshop_delete_submit'] )){
+		$wpdb->delete("wp_workshops",array(
+			"ID"=>$_POST["ID"]
+		));
+	}else if(isset( $_POST['prijzentabel_workshop_edit_submit'] )){
+		
+	}
 	$items = $wpdb->get_results("SELECT * FROM wp_items",ARRAY_A);
+	$workshops = $wpdb->get_results("SELECT * FROM wp_workshops",ARRAY_A);
 	?>
+		<h1>Items</h1>
 		<table style="width:100%;text-align:center">
 			<thead style="background-color:#000000;color:#ffffff;font-weight:500">
 			<tr>
 				<th>Code</th>
-				<th>Item-naam</th>
+				<th>Naam</th>
 				<th>Winkelprijs/pp</th>
 				<th>Winstmarge</th>
 				<th>Dienstprijs</th>
 				<th>Sponsorbijdrage</th>
-				<th>Edit </th>
+				<th>Edit</th>
 			</tr>
 			</thead>
 			<tbody>
 			<tr>
-				<form action="<?=get_admin_url()."admin-post.php"?>" method="POST">
+				<form action="" method="post">
 					<td>
 						/
 					</td>
 					<td>
-						<input style="width=100%" type="text" name="naam" id="naam" placeholder="naam van dit item" required/>
+						<input style="width=100%" type="text" name="naam" id="i_naam" placeholder="naam van dit item" required/>
 					</td>
 					<td>
-						<input style="width=100%" type="number" oninput="new_item()" name="winkelprijs_pp" id="winkelprijs_pp" placeholder="winkelprijs per persoon" required/>
+						<input style="width=100%" type="number" oninput="new_item()" name="winkelprijs_pp" id="i_winkelprijs_pp" placeholder="winkelprijs per persoon" required/>
 					</td>
 					<td>
-						<input style="width=100%" type="number" oninput="new_item()" name="winstmarge" id="winstmarge" placeholder="winstmarge in %" required/>
+						<input style="width=100%" type="number" oninput="new_item()" name="winstmarge" id="i_winstmarge" placeholder="winstmarge in %" required/>
 					</td>
-					<td id="dienstprijs"></td>
-					<td id="sponsorbijdrage"></td>
+					<td id="i_dienstprijs"></td>
+					<td id="i_sponsorbijdrage"></td>
 					<td>
-						<input type="submit" name="prijzentabel_item_add_submit" value="Add"/>
+					<?= get_submit_button( 'Add', null, 'prijzentabel_item_add_submit' ) ?>
 					</td>
 				</form>
 			</tr>
 			<script>
 				function new_item(){
-					let winkelprijs_pp = document.getElementById("winkelprijs_pp").value;
-					let winstmarge = document.getElementById("winstmarge").value;
-					let dienstprijs = document.getElementById("dienstprijs");
-					let sponsorbijdrage = document.getElementById("sponsorbijdrage");
+					let winkelprijs_pp = document.getElementById("i_winkelprijs_pp").value;
+					let winstmarge = document.getElementById("i_winstmarge").value;
+					let dienstprijs = document.getElementById("i_dienstprijs");
+					let sponsorbijdrage = document.getElementById("i_sponsorbijdrage");
 						console.log(winkelprijs_pp,winstmarge);
 					if(winkelprijs_pp!="" && winstmarge!=""){
 						dienstprijs.innerText= Math.round(Number(winkelprijs_pp)+(Number(winkelprijs_pp)*Number(winstmarge)/100.0))+" EUR";
@@ -156,8 +187,95 @@ function prijzentabel_page(){
 					<td><?= $dienstprijs ?> EUR</td>
 					<td><?= $sponsorbijdrage ?> EUR</td>
 					<td>
-						<button>Delete</button>
-						<button>Edit</button>
+						<form action="" method="post">
+							<input type="text" style="display:none;" name="ID" value="<?= $item["ID"]?>" />
+							<?= get_submit_button( 'Delete', null, 'prijzentabel_item_delete_submit' ) ?>
+						</form>
+					</td>
+				</tr>
+			<?php } ?>
+			</tbody>
+		</table>
+		<hr />
+		<h1>Workshops</h1>
+		<table style="width:100%;text-align:center">
+			<thead style="background-color:#000000;color:#ffffff;font-weight:500">
+			<tr>
+				<th>Code</th>
+				<th>Naam</th>
+				<th>Prijs per persoon</th>
+				<th>Minimum prijs</th>
+				<th>Winstmarge</th>
+				<th>Dienstprijs</th>
+				<th>Sponsorbijdrage</th>
+				<th>Edit</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr>
+				<form action="" method="post">
+					<td>
+						/
+					</td>
+					<td>
+						<input style="width=100%" type="text" name="naam" id="ws_naam" placeholder="naam van deze workshop" required/>
+					</td>
+					<td>
+						<input style="width=100%" type="number" step="0.1" oninput="new_workshop()" name="prijs_pp" id="ws_prijs_pp" placeholder="winkelprijs per persoon" required/>
+					</td>
+					<td>
+						<input style="width=100%" type="number" oninput="new_workshop()" name="min_prijs" id="ws_min_prijs" placeholder="minimum prijs" required/>
+					</td>
+					<td>
+						<input style="width=100%" type="number" oninput="new_workshop()" name="winstmarge" id="ws_winstmarge" placeholder="winstmarge in %" required/>
+					</td>
+					<td id="ws_dienstprijs"></td>
+					<td id="ws_sponsorbijdrage"></td>
+					<td>
+					<?= get_submit_button( 'Add', null, 'prijzentabel_workshop_add_submit' ) ?>
+					</td>
+				</form>
+			</tr>
+			<script>
+				function new_workshop(){
+					let prijs_pp = Number(document.getElementById("ws_prijs_pp").value);
+					let min_prijs = Number(document.getElementById("ws_min_prijs").value)
+					let prijs = (prijs_pp>min_prijs)?prijs_pp:min_prijs;
+					let winstmarge = Number(document.getElementById("ws_winstmarge").value);
+					let dienstprijs = document.getElementById("ws_dienstprijs");
+					let sponsorbijdrage = document.getElementById("ws_sponsorbijdrage");
+					if(min_prijs!="" && winstmarge!=""){
+						dienstprijs.innerText= Math.round(prijs+(prijs*winstmarge/100.0))+" EUR";
+						sponsorbijdrage.innerText=Math.round(prijs+(prijs*winstmarge/100.0)) -prijs +" EUR" ;
+					}else{
+						dienstprijs.innerText="";
+						sponsorbijdrage.innerText="";
+					}
+				}
+			</script>
+			<?php
+			foreach($workshops as $workshop){
+				$min_prijs = intval($workshop["min_prijs"]);
+				$prijs_pp = intval($workshop["prijs_pp"]);
+				$prijs = ($prijs_pp>$min_prijs)?$prijs_pp:$min_prijs;
+				$winstmarge = intval($workshop["winstmarge"]);
+				$dienstprijs = round($prijs+($prijs*$winstmarge/100), 0);
+				$sponsorbijdrage = $dienstprijs-$prijs;
+				$ID = intval($workshop["ID"]);
+				?>
+				<tr style="<?= (($ID % 2 == 1)?"background-color:#CCCCCC":"") ?>">
+					<td><?= $workshop["ID"]?></td>
+					<td><?= $workshop["naam"] ?></td>
+					<td><?= $workshop["min_prijs"] ?> EUR</td>
+					<td><?= $workshop["prijs_pp"] ?> EUR/pp</td>
+					<td><?= $workshop["winstmarge"] ?>%</td>
+					<td><?= $dienstprijs ?> EUR</td>
+					<td><?= $sponsorbijdrage ?> EUR</td>
+					<td>
+						<form action="" method="post">
+							<input type="text" style="display:none;" name="ID" value="<?= $workshop["ID"]?>" />
+							<?= get_submit_button( 'Delete', null, 'prijzentabel_workshop_delete_submit' ) ?>
+						</form>
 					</td>
 				</tr>
 			<?php } ?>
@@ -165,7 +283,6 @@ function prijzentabel_page(){
 		</table>
 	<?php
 }
-
 
 add_shortcode('prijscalculatie_formulier','prijscalculatie_formulier');
 add_action("admin_menu","prijzentabel");
