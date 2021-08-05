@@ -78,8 +78,8 @@ run_prijscalculatie();
 
 function prijscalculatie_formulier(){
 	global $wpdb;
-	$items = $wpdb->get_results("SELECT * FROM wp_items",ARRAY_A);
-	$workshops = $wpdb->get_results("SELECT * FROM wp_workshops",ARRAY_A);
+	$items = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_items",ARRAY_A);
+	$workshops = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_workshops",ARRAY_A);
 	$content = "<div id='TPX_prijscalculatie'></div><script>let items=".json_encode($items).";let workshops=".json_encode($workshops).";prijscalculatie_init();</script>";
 	return $content;
 }
@@ -117,8 +117,17 @@ function prijzentabel_page(){
 	}else if(isset( $_POST['prijzentabel_workshop_edit_submit'] )){
 		
 	}
-	$items = $wpdb->get_results("SELECT * FROM wp_items",ARRAY_A);
-	$workshops = $wpdb->get_results("SELECT * FROM wp_workshops",ARRAY_A);
+	$items = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_items",ARRAY_A);
+	if(count($items)==0){
+		$wpdb->get_results('CREATE TABLE `exampledb`.`wp_TPX_prijscalculatie_items` ( `ID` INT NOT NULL AUTO_INCREMENT , `naam` TEXT NOT NULL , `winkelprijs_pp` DOUBLE NOT NULL , `winstmarge` DOUBLE NOT NULL , PRIMARY KEY (`ID`)) ENGINE = InnoDB;');
+		$items = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_items",ARRAY_A);
+	}
+	$workshops = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_workshops",ARRAY_A);
+	if(count($workshops)==0){
+		$wpdb->get_results('CREATE TABLE `exampledb`.`wp_TPX_prijscalculatie_workshops` ( `ID` INT NOT NULL AUTO_INCREMENT , `naam` TEXT NOT NULL , `min_prijs` DOUBLE NOT NULL , `prijs_pp` DOUBLE NOT NULL ,`winstmarge` DOUBLE NOT NULL , PRIMARY KEY (`ID`)) ENGINE = InnoDB;');
+		$workshops = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_workshops",ARRAY_A);
+	}
+	
 	?>
 		<h1>Activities</h1>
 		<table style="width:100%;text-align:center">
