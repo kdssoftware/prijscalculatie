@@ -80,7 +80,7 @@ function prijscalculatie_formulier(){
 	global $wpdb;
 	$items = $wpdb->get_results("SELECT * FROM wp_items",ARRAY_A);
 	$workshops = $wpdb->get_results("SELECT * FROM wp_workshops",ARRAY_A);
-	$content = "<script>const items=".json_encode($items).";const workshops=".json_encode($workshops).";prijscalculatie_init();</script><div id='TPX_prijscalculatie'></div>";
+	$content = "<div id='TPX_prijscalculatie'></div><script>let items=".json_encode($items).";let workshops=".json_encode($workshops).";prijscalculatie_init();</script>";
 	return $content;
 }
 
@@ -120,7 +120,7 @@ function prijzentabel_page(){
 	$items = $wpdb->get_results("SELECT * FROM wp_items",ARRAY_A);
 	$workshops = $wpdb->get_results("SELECT * FROM wp_workshops",ARRAY_A);
 	?>
-		<h1>Items</h1>
+		<h1>Activities</h1>
 		<table style="width:100%;text-align:center">
 			<thead style="background-color:#000000;color:#ffffff;font-weight:500">
 			<tr>
@@ -143,10 +143,10 @@ function prijzentabel_page(){
 						<input style="width=100%" type="text" name="naam" id="i_naam" placeholder="naam van dit item" required/>
 					</td>
 					<td>
-						<input style="width=100%" type="number" oninput="new_item()" name="winkelprijs_pp" id="i_winkelprijs_pp" placeholder="winkelprijs per persoon" required/>
+						<input style="width=100%" type="number" step="0.01" oninput="new_item()" name="winkelprijs_pp" id="i_winkelprijs_pp" placeholder="winkelprijs per persoon" required/>
 					</td>
 					<td>
-						<input style="width=100%" type="number" oninput="new_item()" name="winstmarge" id="i_winstmarge" placeholder="winstmarge in %" required/>
+						<input style="width=100%" type="number" step="0.01" oninput="new_item()" name="winstmarge" id="i_winstmarge" placeholder="winstmarge in %" required/>
 					</td>
 					<td id="i_dienstprijs"></td>
 					<td id="i_sponsorbijdrage"></td>
@@ -180,7 +180,7 @@ function prijzentabel_page(){
 				$ID = intval($item["ID"]);
 				?>
 				<tr style="<?= (($ID % 2 == 1)?"background-color:#CCCCCC":"") ?>">
-					<td><?= $item["ID"]?></td>
+					<td>A-<?= $item["ID"]?></td>
 					<td><?= $item["naam"] ?></td>
 					<td><?= $item["winkelprijs_pp"] ?> EUR</td>
 					<td><?= $item["winstmarge"] ?>%</td>
@@ -221,13 +221,13 @@ function prijzentabel_page(){
 						<input style="width=100%" type="text" name="naam" id="ws_naam" placeholder="naam van deze workshop" required/>
 					</td>
 					<td>
-						<input style="width=100%" type="number" step="0.1" oninput="new_workshop()" name="prijs_pp" id="ws_prijs_pp" placeholder="winkelprijs per persoon" required/>
+						<input style="width=100%" type="number" step="0.01" oninput="new_workshop()" name="prijs_pp" id="ws_prijs_pp" placeholder="winkelprijs per persoon" required/>
 					</td>
 					<td>
-						<input style="width=100%" type="number" oninput="new_workshop()" name="min_prijs" id="ws_min_prijs" placeholder="minimum prijs" required/>
+						<input style="width=100%" type="number" step="0.01" oninput="new_workshop()" name="min_prijs" id="ws_min_prijs" placeholder="minimum prijs" required/>
 					</td>
 					<td>
-						<input style="width=100%" type="number" oninput="new_workshop()" name="winstmarge" id="ws_winstmarge" placeholder="winstmarge in %" required/>
+						<input style="width=100%" type="number" step="0.01 oninput="new_workshop()" name="winstmarge" id="ws_winstmarge" placeholder="winstmarge in %" required/>
 					</td>
 					<td id="ws_dienstprijs"></td>
 					<td id="ws_sponsorbijdrage"></td>
@@ -264,7 +264,7 @@ function prijzentabel_page(){
 				$ID = intval($workshop["ID"]);
 				?>
 				<tr style="<?= (($ID % 2 == 1)?"background-color:#CCCCCC":"") ?>">
-					<td><?= $workshop["ID"]?></td>
+					<td>WS-<?= $workshop["ID"]?></td>
 					<td><?= $workshop["naam"] ?></td>
 					<td><?= $workshop["min_prijs"] ?> EUR</td>
 					<td><?= $workshop["prijs_pp"] ?> EUR/pp</td>
