@@ -1,3 +1,3 @@
 usage: 
 
-form hook : `[prijscalculatie_formulier]`
+form hook : `[TPX_prijscalculatie_form]`

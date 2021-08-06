@@ -1,7 +1,6 @@
 <?php
 
 /**
- * The plugin bootstrap file
  *
  * @link              https://github.com/snakehead007/prijscalculatie
  * @since             1.0.0
@@ -9,12 +8,12 @@
  *
  * @wordpress-plugin
  * Plugin Name:       TPX Prijscalculatie 
- * Plugin URI:        https://wordpress.org/plugins/TPX-prijscalculatie
+ * Plugin URI:        https://wordpress.org/plugins/tpx-prijscalculatie
  * Description:       Provide prizing and add a page to create qoutes.
  * Version:           1.0.0
- * Author:            Karel De Smet
+ * Author:            Karel De Smet 	
  * Author URI:        http://karel.be
- * License:           GPL-2.0+
+ * License:           GPL v2 or later
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       TPX Prijscalculatie 
  * Domain Path:       /languages
@@ -78,8 +77,8 @@ run_prijscalculatie();
 
 function prijscalculatie_formulier(){
 	global $wpdb;
-	$items = $wpdb->get_results("SELECT * FROM wp_items",ARRAY_A);
-	$workshops = $wpdb->get_results("SELECT * FROM wp_workshops",ARRAY_A);
+	$items = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_items",ARRAY_A);
+	$workshops = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_workshops",ARRAY_A);
 	$content = "<div id='TPX_prijscalculatie'></div><script>let items=".json_encode($items).";let workshops=".json_encode($workshops).";prijscalculatie_init();</script>";
 	return $content;
 }
@@ -92,33 +91,42 @@ function prijzentabel_page(){
 	global $wpdb;
 
 	if( isset( $_POST['prijzentabel_item_add_submit'] ) ) {
-		$wpdb->insert("wp_items",array(
+		$wpdb->insert("wp_TPX_prijscalculatie_items",array(
 			"naam"=>$_POST["naam"],
 			"winkelprijs_pp" =>$_POST["winkelprijs_pp"],
 			"winstmarge"=>$_POST["winstmarge"]
 		));
 	}else if( isset( $_POST['prijzentabel_workshop_add_submit'] ) ) {
-		$wpdb->insert("wp_workshops",array(
+		$wpdb->insert("wp_TPX_prijscalculatie_workshops",array(
 			"naam"=>$_POST["naam"],
 			"min_prijs" =>$_POST["min_prijs"],
 			"prijs_pp"=>$_POST["prijs_pp"],
 			"winstmarge"=>$_POST["winstmarge"]
 		));
 	}else if(isset( $_POST['prijzentabel_item_delete_submit'] )){
-		$wpdb->delete("wp_items",array(
+		$wpdb->delete("wp_TPX_prijscalculatie_items",array(
 			"ID"=>$_POST["ID"]
 		));
 	}else if(isset( $_POST['prijzentabel_item_edit_submit'] )){
 		
 	}else if(isset( $_POST['prijzentabel_workshop_delete_submit'] )){
-		$wpdb->delete("wp_workshops",array(
+		$wpdb->delete("wp_TPX_prijscalculatie_workshops",array(
 			"ID"=>$_POST["ID"]
 		));
 	}else if(isset( $_POST['prijzentabel_workshop_edit_submit'] )){
 		
 	}
-	$items = $wpdb->get_results("SELECT * FROM wp_items",ARRAY_A);
-	$workshops = $wpdb->get_results("SELECT * FROM wp_workshops",ARRAY_A);
+	$items = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_items",ARRAY_A);
+	if(count($items)==0){
+		$wpdb->get_results('CREATE TABLE `exampledb`.`wp_TPX_prijscalculatie_items` ( `ID` INT NOT NULL AUTO_INCREMENT , `naam` TEXT NOT NULL , `winkelprijs_pp` DOUBLE NOT NULL , `winstmarge` DOUBLE NOT NULL , PRIMARY KEY (`ID`)) ENGINE = InnoDB;');
+		$items = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_items",ARRAY_A);
+	}
+	$workshops = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_workshops",ARRAY_A);
+	if(count($workshops)==0){
+		$wpdb->get_results('CREATE TABLE `exampledb`.`wp_TPX_prijscalculatie_workshops` ( `ID` INT NOT NULL AUTO_INCREMENT , `naam` TEXT NOT NULL , `min_prijs` DOUBLE NOT NULL , `prijs_pp` DOUBLE NOT NULL ,`winstmarge` DOUBLE NOT NULL , PRIMARY KEY (`ID`)) ENGINE = InnoDB;');
+		$workshops = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_workshops",ARRAY_A);
+	}
+	
 	?>
 		<h1>Activities</h1>
 		<table style="width:100%;text-align:center">
@@ -182,7 +190,7 @@ function prijzentabel_page(){
 				<tr style="<?= (($ID % 2 == 1)?"background-color:#CCCCCC":"") ?>">
 					<td>A-<?= $item["ID"]?></td>
 					<td><?= $item["naam"] ?></td>
-					<td><?= $item["winkelprijs_pp"] ?> EUR</td>
+					<td><?= $item["winkelprijs_pp"] ?> EUR/PP </td>
 					<td><?= $item["winstmarge"] ?>%</td>
 					<td><?= $dienstprijs ?> EUR</td>
 					<td><?= $sponsorbijdrage ?> EUR</td>
@@ -266,8 +274,8 @@ function prijzentabel_page(){
 				<tr style="<?= (($ID % 2 == 1)?"background-color:#CCCCCC":"") ?>">
 					<td>WS-<?= $workshop["ID"]?></td>
 					<td><?= $workshop["naam"] ?></td>
-					<td><?= $workshop["min_prijs"] ?> EUR</td>
 					<td><?= $workshop["prijs_pp"] ?> EUR/pp</td>
+					<td><?= $workshop["min_prijs"] ?> EUR</td>
 					<td><?= $workshop["winstmarge"] ?>%</td>
 					<td><?= $dienstprijs ?> EUR</td>
 					<td><?= $sponsorbijdrage ?> EUR</td>
@@ -284,7 +292,7 @@ function prijzentabel_page(){
 	<?php
 }
 
-add_shortcode('prijscalculatie_formulier','prijscalculatie_formulier');
+add_shortcode('TPX_prijscalculatie_form','prijscalculatie_formulier');
 add_action("admin_menu","prijzentabel");
 // add_action("wp_head","prijzentabel_item_add");
 ?>
