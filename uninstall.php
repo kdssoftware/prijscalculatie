@@ -29,3 +29,7 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+global $wpdb;
+$wpdb->get_results("DROP  TABLE wp_TPX_prijscalculatie_workshops");
+$wpdb->get_results("DROP  TABLE wp_TPX_prijscalculatie_items");
