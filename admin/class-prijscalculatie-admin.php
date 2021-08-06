@@ -3,11 +3,11 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @link       http://example.com
+ * @link       https://github.com/snakehead007/prijscalculatie
  * @since      1.0.0
  *
- * @package    prijscalculatie
- * @subpackage prijscalculatie/admin
+ * @package    TPX prijscalculatie
+ * @subpackage tpx-prijscalculatie/admin
  */
 
 /**
@@ -16,9 +16,9 @@
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the admin-specific stylesheet and JavaScript.
  *
- * @package    prijscalculatie
- * @subpackage prijscalculatie/admin
- * @author     Your Name <email@example.com>
+ * @package    TPX prijscalculatie
+ * @subpackage tpx-prijscalculatie/admin
+ * @author     Karel De Smet <snakehead007@pm.me>
  */
 class prijscalculatie_Admin {
 

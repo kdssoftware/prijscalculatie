@@ -15,7 +15,7 @@ A plugin that adds a new TPX pricing system, using activities, packets and works
  
 == Installation ==
  
-use the hook '[TPX_prijscalculatie_form]' on any page to add the form to the page.
+use the hook '[tpx-prijscalculatie_form]' on any page to add the form to the page.
  
 == Frequently Asked Questions ==
  

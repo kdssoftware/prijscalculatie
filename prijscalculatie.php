@@ -77,9 +77,9 @@ run_prijscalculatie();
 
 function prijscalculatie_formulier(){
 	global $wpdb;
-	$items = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_items",ARRAY_A);
-	$workshops = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_workshops",ARRAY_A);
-	$content = "<div id='TPX_prijscalculatie'></div><script>let items=".json_encode($items).";let workshops=".json_encode($workshops).";prijscalculatie_init();</script>";
+	$items = $wpdb->get_results("SELECT * FROM wp_tpx-prijscalculatie_items",ARRAY_A);
+	$workshops = $wpdb->get_results("SELECT * FROM wp_tpx-prijscalculatie_workshops",ARRAY_A);
+	$content = "<div id='tpx-prijscalculatie'></div><script>let items=".json_encode($items).";let workshops=".json_encode($workshops).";prijscalculatie_init();</script>";
 	return $content;
 }
 
@@ -89,45 +89,120 @@ function prijzentabel(){
 
 function prijzentabel_page(){
 	global $wpdb;
-
+	echo json_encode($_POST);
 	if( isset( $_POST['prijzentabel_item_add_submit'] ) ) {
-		$wpdb->insert("wp_TPX_prijscalculatie_items",array(
+		$wpdb->insert("wp_tpx-prijscalculatie_items",array(
 			"naam"=>$_POST["naam"],
 			"winkelprijs_pp" =>$_POST["winkelprijs_pp"],
 			"winstmarge"=>$_POST["winstmarge"]
 		));
 	}else if( isset( $_POST['prijzentabel_workshop_add_submit'] ) ) {
-		$wpdb->insert("wp_TPX_prijscalculatie_workshops",array(
+		$wpdb->insert("wp_tpx-prijscalculatie_workshops",array(
 			"naam"=>$_POST["naam"],
 			"min_prijs" =>$_POST["min_prijs"],
 			"prijs_pp"=>$_POST["prijs_pp"],
 			"winstmarge"=>$_POST["winstmarge"]
 		));
 	}else if(isset( $_POST['prijzentabel_item_delete_submit'] )){
-		$wpdb->delete("wp_TPX_prijscalculatie_items",array(
+		$wpdb->delete("wp_tpx-prijscalculatie_items",array(
 			"ID"=>$_POST["ID"]
 		));
 	}else if(isset( $_POST['prijzentabel_item_edit_submit'] )){
 		
 	}else if(isset( $_POST['prijzentabel_workshop_delete_submit'] )){
-		$wpdb->delete("wp_TPX_prijscalculatie_workshops",array(
+		$wpdb->delete("wp_tpx-prijscalculatie_workshops",array(
 			"ID"=>$_POST["ID"]
 		));
-	}else if(isset( $_POST['prijzentabel_workshop_edit_submit'] )){
+	}else if(isset( $_POST['prijzentabel_package_add_submit'] )){
+		$items = implode(",",$_POST["items"]).",".implode(",",$_POST["workshops"]);
+		$active = $_POST["active"]=="on"?"1":"NULL";
+		$wpdb->insert("wp_tpx-prijscalculatie_packages",array(
+			"naam"=>$_POST["naam"],
+			"items"=>$items,
+			"active"=>$active
+		));
+	}else if(isset( $_POST['prijzentabel_package_delete_submit'] )){
 		
 	}
-	$items = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_items",ARRAY_A);
-	if(count($items)==0){
-		$wpdb->get_results('CREATE TABLE `exampledb`.`wp_TPX_prijscalculatie_items` ( `ID` INT NOT NULL AUTO_INCREMENT , `naam` TEXT NOT NULL , `winkelprijs_pp` DOUBLE NOT NULL , `winstmarge` DOUBLE NOT NULL , PRIMARY KEY (`ID`)) ENGINE = InnoDB;');
-		$items = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_items",ARRAY_A);
-	}
-	$workshops = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_workshops",ARRAY_A);
-	if(count($workshops)==0){
-		$wpdb->get_results('CREATE TABLE `exampledb`.`wp_TPX_prijscalculatie_workshops` ( `ID` INT NOT NULL AUTO_INCREMENT , `naam` TEXT NOT NULL , `min_prijs` DOUBLE NOT NULL , `prijs_pp` DOUBLE NOT NULL ,`winstmarge` DOUBLE NOT NULL , PRIMARY KEY (`ID`)) ENGINE = InnoDB;');
-		$workshops = $wpdb->get_results("SELECT * FROM wp_TPX_prijscalculatie_workshops",ARRAY_A);
-	}
+	$items = $wpdb->get_results("SELECT * FROM `wp_tpx-prijscalculatie_items`",ARRAY_A);
+	$workshops = $wpdb->get_results("SELECT * FROM `wp_tpx-prijscalculatie_workshops`",ARRAY_A);
+	$packages = $wpdb->get_results("SELECT * FROM `wp_tpx-prijscalculatie_packages`",ARRAY_A);
 	
 	?>
+	<h1>Packages</h1>
+		<table style="width:100%;text-align:center">
+			<thead style="background-color:#000000;color:#ffffff;font-weight:500">
+			<tr>
+				<th>Code</th>
+				<th>Naam</th>	
+				<th>Items</th>
+				<th>Actief</th>
+				<th>Edit</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr>
+				<form action="" method="post">
+					<td>
+						/
+					</td>
+					<td>
+						<input style="width=100%" type="text" name="naam" id="p_naam" placeholder="naam van dit pakket" required/>
+					</td>
+					<td>
+						<p>Activities</p>
+						<?php
+						foreach($items as $item){
+							?>
+							<div>
+								<input type="radio" value="A-<?= $item["ID"] ?>" name="items[<?= $item["ID"] ?>]" id="A-<?= $item["ID"] ?>">
+								<label id="A-<?= $item["ID"] ?>"><?= $item["naam"] ?></label>
+							</div>
+						<?php } ?>
+						<p>Workshops</p>
+						<?php
+						foreach($workshops as $workshop){
+							?>
+							<div>
+								<input type="radio" value="WS-<?= $workshop["ID"] ?>" name="workshops[<?= $workshop["ID"] ?>]" id="WS-<?= $workshop["ID"] ?>">
+								<label id="WS-<?= $workshop["ID"] ?>"><?= $workshop["naam"] ?></label>
+							</div>
+						<?php } ?>
+					</td>
+					<td >
+						<div>
+							<input id="active" type="radio" name="active" value="on" checked="">
+							<label for="active">Actief</label>
+						</div>
+						<div>
+							<input id="active" type="radio" name="active" value="off">
+							<label for="active">Inactief</label>
+						</div>
+					</td>
+					<td>
+					<?= get_submit_button( 'Add', null, 'prijzentabel_package_add_submit' ) ?>
+					</td>
+				</form>
+			</tr>
+			<?php
+			foreach($packages as $package){
+				$ID = intval($package["ID"]);
+				?>
+				<tr style="<?= (($ID % 2 == 1)?"background-color:#CCCCCC":"") ?>">
+					<td>P-<?= $package["ID"]?></td>
+					<td><?= $package["naam"] ?></td>
+					<td><?= $package["items"] ?></td>
+					<td><?= $package["active"] ?></td>
+					<td>
+						<form action="" method="post">
+							<input type="text" style="display:none;" name="ID" value="<?= $package["ID"]?>" />
+							<?= get_submit_button( 'Delete', null, 'prijzentabel_package_delete_submit' ) ?>
+						</form>
+					</td>
+				</tr>
+			<?php } ?>
+			</tbody>
+		</table>
 		<h1>Activities</h1>
 		<table style="width:100%;text-align:center">
 			<thead style="background-color:#000000;color:#ffffff;font-weight:500">
@@ -292,7 +367,7 @@ function prijzentabel_page(){
 	<?php
 }
 
-add_shortcode('TPX_prijscalculatie_form','prijscalculatie_formulier');
+add_shortcode('tpx-prijscalculatie_form','prijscalculatie_formulier');
 add_action("admin_menu","prijzentabel");
 // add_action("wp_head","prijzentabel_item_add");
 ?>

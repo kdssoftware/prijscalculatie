@@ -6,8 +6,8 @@
  * @link       https://github.com/snakehead007/prijscalculatie
  * @since      1.0.0
  *
- * @package    prijscalculatie
- * @subpackage prijscalculatie/includes
+ * @package    TPX prijscalculatie
+ * @subpackage tpx-prijscalculatie/includes
  */
 
 /**
@@ -17,8 +17,8 @@
  * the plugin, and register them with the WordPress API. Call the
  * run function to execute the list of actions and filters.
  *
- * @package    prijscalculatie
- * @subpackage prijscalculatie/includes
+ * @package    TPX prijscalculatie
+ * @subpackage tpx-prijscalculatie/includes
  * @author     Karel De Smet <snakehead007@pm.me>
  */
 class prijscalculatie_Loader {

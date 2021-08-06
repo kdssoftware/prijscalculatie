@@ -6,8 +6,8 @@
  * @link       https://github.com/snakehead007/prijscalculatie
  * @since      1.0.0
  *
- * @package    prijscalculatie
- * @subpackage prijscalculatie/public
+ * @package    TPX prijscalculatie
+ * @subpackage tpx-prijscalculatie/public
  */
 
 /**
@@ -16,8 +16,8 @@
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the public-facing stylesheet and JavaScript.
  *
- * @package    prijscalculatie
- * @subpackage prijscalculatie/public
+ * @package    TPX prijscalculatie
+ * @subpackage tpx-prijscalculatie/public
  * @author     Karel De Smet <snakehead007@pm.me>
  */
 class prijscalculatie_Public {

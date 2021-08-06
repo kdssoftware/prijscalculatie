@@ -9,8 +9,8 @@
  * @link       https://github.com/snakehead007/prijscalculatie
  * @since      1.0.0
  *
- * @package    prijscalculatie
- * @subpackage prijscalculatie/includes
+ * @package    TPX prijscalculatie
+ * @subpackage tpx-prijscalculatie/includes
  */
 
 /**
@@ -20,8 +20,8 @@
  * so that it is ready for translation.
  *
  * @since      1.0.0
- * @package    prijscalculatie
- * @subpackage prijscalculatie/includes
+ * @package    TPX prijscalculatie
+ * @subpackage tpx-prijscalculatie/includes
  * @author     Karel De Smet <snakehead007@pm.me>
  */
 class prijscalculatie_i18n {

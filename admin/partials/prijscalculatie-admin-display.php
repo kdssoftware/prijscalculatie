@@ -5,11 +5,11 @@
  *
  * This file is used to markup the admin-facing aspects of the plugin.
  *
- * @link       http://example.com
+ * @link       https://github.com/snakehead007/prijscalculatie
  * @since      1.0.0
  *
- * @package    prijscalculatie
- * @subpackage prijscalculatie/admin/partials
+ * @package    TPX prijscalculatie
+ * @subpackage tpx-prijscalculatie/admin/partials
  */
 ?>
 

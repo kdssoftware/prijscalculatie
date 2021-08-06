@@ -8,8 +8,8 @@
  * @link       https://github.com/snakehead007/prijscalculatie
  * @since      1.0.0
  *
- * @package    prijscalculatie
- * @subpackage prijscalculatie/public/partials
+ * @package    TPX prijscalculatie
+ * @subpackage tpx-prijscalculatie/public/partials
  */
 ?>
 
